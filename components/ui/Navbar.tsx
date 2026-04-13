@@ -14,28 +14,28 @@ export default function Navbar() {
       <div className="container mx-auto max-w-md">
         <div className="flex justify-around items-stretch">
           <NavLink
-            href="/dashboard/home"
+            href="/home"
             icon={<Home size={24} />}
             label="Home"
-            active={isActive('/dashboard/home')}
+            active={isActive('/home')}
           />
           <NavLink
-            href="/dashboard/workout"
+            href="/workout"
             icon={<Dumbbell size={24} />}
             label="Workout"
-            active={isActive('/dashboard/workout')}
+            active={isActive('/workout')}
           />
           <NavLink
-            href="/dashboard/analytics"
+            href="/analytics"
             icon={<BarChart3 size={24} />}
             label="Analytics"
-            active={isActive('/dashboard/analytics')}
+            active={isActive('/analytics')}
           />
           <NavLink
-            href="/dashboard/settings"
+            href="/settings"
             icon={<Settings size={24} />}
             label="Settings"
-            active={isActive('/dashboard/settings')}
+            active={isActive('/settings')}
           />
         </div>
       </div>
