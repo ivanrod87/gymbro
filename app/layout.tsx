@@ -33,8 +33,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const theme = localStorage.getItem('theme') || 'dark';
+                const html = document.documentElement;
+                if (theme === 'light') {
+                  html.classList.remove('dark');
+                } else {
+                  html.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -43,7 +58,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <link rel="icon" type="image/png" href="/icons/icon-192x192.png" />
       </head>
-      <body className="bg-dark-900 text-gray-50">
+      <body>
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-1 container mx-auto w-full px-4 pt-4 pb-20">
