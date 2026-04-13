@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id                    String      @id @default(cuid())
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+  email                 String      @unique
+  currentWeight         Float?      @map("current_weight")
+  targetWeight          Float?      @map("target_weight")
+  bodyFatPercentage     Float?      @map("body_fat_percentage")
+  theme                 String      @default("dark") // "light" | "dark" | "system"
+  gymVacationMode       Boolean     @default(false) @map("gym_vacation_mode")
+  vacationStartDate     DateTime?   @map("vacation_start_date")
+  vacationEndDate       DateTime?   @map("vacation_end_date")
+
+  // Relations
+  workoutSessions       WorkoutSession[]
+  bodyStats             BodyStats[]
+  exercises             ExerciseProfile[]
+
+  @@map("profiles")
+}
+
+model Exercise {
+  id                    String      @id @default(cuid())
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+  name                  String
+  description           String?
+  primaryMuscleGroup    String      @map("primary_muscle_group")
+  secondaryMuscleGroups String[]    @default([]) @map("secondary_muscle_groups")
+  priority              Int         // 1, 2, or 3
+  isActive              Boolean     @default(true) @map("is_active")
+  pplCategory           String      @map("ppl_category") // "push" | "pull" | "legs"
+  defaultWeight         Float?      @map("default_weight")
+  defaultSets           Int         @default(3) @map("default_sets")
+  defaultReps           Int         @default(8) @map("default_reps")
+  defaultRestSeconds    Int         @default(60) @map("default_rest_seconds")
+
+  // Relations
+  workoutLogs           WorkoutLog[]
+  profiles              ExerciseProfile[]
+
+  @@map("exercises")
+}
+
+model ExerciseProfile {
+  profileId             String
+  exerciseId            String
+  profile               Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  exercise              Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, exerciseId])
+  @@map("exercise_profiles")
+}
+
+model WorkoutSession {
+  id                    String      @id @default(cuid())
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+  profileId             String      @map("profile_id")
+  sessionDate           DateTime    @map("session_date")
+  pplCategory           String      @map("ppl_category") // "push" | "pull" | "legs"
+  estimatedDurationMinutes Int      @map("estimated_duration_minutes")
+  estimatedCalories     Int         @map("estimated_calories")
+  actualDurationMinutes Int?        @map("actual_duration_minutes")
+  actualCalories        Int?        @map("actual_calories")
+  completed             Boolean     @default(false)
+  notes                 String?
+
+  // Relations
+  profile               Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  workoutLogs           WorkoutLog[]
+  modifiers             SessionModifier[]
+
+  @@map("workout_sessions")
+}
+
+model WorkoutLog {
+  id                    String      @id @default(cuid())
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+  sessionId             String      @map("session_id")
+  exerciseId            String      @map("exercise_id")
+  plannedSets           Int         @map("planned_sets")
+  plannedReps           Int         @map("planned_reps")
+  plannedWeight         Float       @map("planned_weight")
+  plannedRestSeconds    Int         @map("planned_rest_seconds")
+  actualSets            Int?        @map("actual_sets")
+  actualReps            Int?        @map("actual_reps")
+  actualWeight          Float?      @map("actual_weight")
+  completed             Boolean     @default(false)
+  notes                 String?
+
+  // Relations
+  session               WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise              Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@map("workout_logs")
+}
+
+model BodyStats {
+  id                    String      @id @default(cuid())
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+  profileId             String      @map("profile_id")
+  recordedDate          DateTime    @map("recorded_date")
+  weight                Float
+  bodyFatPercentage     Float?      @map("body_fat_percentage")
+  notes                 String?
+
+  // Relations
+  profile               Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("body_stats")
+}
+
+model SessionModifier {
+  id                    String      @id @default(cuid())
+  sessionId             String      @map("session_id")
+  modifierType          String      @map("modifier_type") // "quick_session" | "tired" | "cardio"
+  isEnabled             Boolean     @default(false) @map("is_enabled")
+
+  // Relations
+  session               WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("session_modifiers")
+}
+
