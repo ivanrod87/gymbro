@@ -10,7 +10,7 @@ export default function Navbar() {
   const isActive = (path: string) => pathname?.startsWith(path);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-dark-800 border-t border-dark-700 safe-area-inset-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-dark-800 dark:border-dark-700 safe-area-inset-bottom transition-colors duration-200">
       <div className="container mx-auto max-w-md">
         <div className="flex justify-around items-stretch">
           <NavLink
@@ -59,8 +59,8 @@ function NavLink({
       href={href}
       className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-colors ${
         active
-          ? 'text-blue-500 bg-dark-700'
-          : 'text-gray-400 hover:text-gray-200'
+          ? 'text-blue-500 bg-blue-50 dark:bg-dark-700'
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
       }`}
     >
       {icon}
