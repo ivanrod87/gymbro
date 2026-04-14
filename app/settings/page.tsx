@@ -88,9 +88,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="space-y-6 pb-20">
-      <h1 className="text-3xl font-bold">{translations.settings}</h1>
-
+    <div className="max-w-[800px] mx-auto space-y-6 pb-20">
       <div className="space-y-3">
         {settingsGroups.map((group) => {
           const IconComponent = group.icon;

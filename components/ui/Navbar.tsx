@@ -48,7 +48,7 @@ export default function Navbar() {
   }, [language, translate]);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-dark-800 dark:border-dark-700 safe-area-inset-bottom transition-colors duration-200">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-dark-800 dark:border-dark-700 safe-area-inset-bottom transition-colors duration-200">
       <div className="container mx-auto max-w-md">
         <div className="flex justify-around items-stretch">
           <NavLink
