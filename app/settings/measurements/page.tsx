@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Scale, ChevronLeft, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
+import { useToast } from '@/lib/useToast';
+import { ToastContainer } from '@/components/ToastContainer';
 import {
   saveMeasurementEntry,
   getMeasurementHistory,
@@ -41,6 +43,7 @@ interface Translations {
 
 export default function MeasurementsPage() {
   const { language, theme, translate } = useTranslation();
+  const { toasts, showToast, removeToast } = useToast();
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inch'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('heightUnit') as 'cm' | 'inch') || 'cm';
@@ -193,7 +196,7 @@ export default function MeasurementsPage() {
 
   const handleSaveEntry = async () => {
     if (!height || !weight) {
-      alert('Please enter height and weight');
+      showToast('Please enter height and weight', 'error');
       return;
     }
 
@@ -219,7 +222,7 @@ export default function MeasurementsPage() {
       localStorage.setItem('lastWeight', weight);
       localStorage.setItem('lastBodyType', bodyType);
 
-      alert('Measurement saved successfully!');
+      showToast('Measurement saved successfully!', 'success');
     } finally {
       setSaving(false);
     }
@@ -440,6 +443,9 @@ export default function MeasurementsPage() {
           )}
         </div>
       </div>
+
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 }
