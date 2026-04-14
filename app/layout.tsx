@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Navbar from '@/components/ui/Navbar';
+import Sidebar from '@/components/ui/Sidebar';
 import { TranslationProvider } from '@/lib/TranslationContext';
 
 export const metadata: Metadata = {
@@ -46,11 +47,19 @@ export default function RootLayout({
       </head>
       <body>
         <TranslationProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1 container mx-auto w-full px-4 pt-4 pb-20">
-              {children}
-            </main>
+          <div className="min-h-screen flex flex-col md:flex-row">
+            {/* Desktop Sidebar */}
+            <Sidebar />
+            
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col md:ml-20">
+              <Navbar />
+              <main className="flex-1 w-full px-4 pt-4 pb-20 md:pb-4 md:pt-6 md:px-8">
+                <div className="max-w-7xl mx-auto">
+                  {children}
+                </div>
+              </main>
+            </div>
           </div>
         </TranslationProvider>
       </body>

@@ -137,7 +137,7 @@ export default function PreferencesPage() {
   }, [language, translate]);
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="max-w-[800px] mx-auto space-y-6 pb-20">
       {/* Header with back button */}
       <div className="flex items-center gap-3">
         <Link
