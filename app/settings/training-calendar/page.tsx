@@ -31,17 +31,20 @@ interface Translations {
   weekdaysLabel: string;
 }
 
+// All available weekdays
 const WEEKDAYS: Weekday[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+// Preset schedules for quick selection
 const SCHEDULE_PRESETS: Record<ScheduleType, Weekday[] | null> = {
   '3-day': ['Mon', 'Wed', 'Fri'],
   '5-day': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
   '6-day': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  custom: null,
+  custom: null,  // Custom allows user to select each day
 };
 
 export default function TrainingCalendarPage() {
   const { language, translate } = useTranslation();
+  // Load schedule from localStorage or default to 3-day
   const [schedule, setSchedule] = useState<ScheduleType>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('trainingSchedule') as ScheduleType) || '3-day';
@@ -49,6 +52,7 @@ export default function TrainingCalendarPage() {
     return '3-day';
   });
 
+  // Load selected training days from localStorage
   const [selectedDays, setSelectedDays] = useState<Weekday[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('trainingDays');
@@ -57,6 +61,7 @@ export default function TrainingCalendarPage() {
     return SCHEDULE_PRESETS['3-day'] || [];
   });
 
+  // Load vacation mode status from localStorage
   const [vacationMode, setVacationMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('vacationMode') === 'true';
@@ -64,6 +69,7 @@ export default function TrainingCalendarPage() {
     return false;
   });
 
+  // Track save state for button feedback
   const [saved, setSaved] = useState(false);
 
   const [translations, setTranslations] = useState<Translations>({
@@ -167,36 +173,43 @@ export default function TrainingCalendarPage() {
     loadTranslations();
   }, [language, translate]);
 
+  // Change schedule type and load corresponding preset days
   const handleScheduleChange = (newSchedule: ScheduleType) => {
     setSchedule(newSchedule);
     const preset = SCHEDULE_PRESETS[newSchedule];
     if (preset) {
       setSelectedDays(preset);
     } else {
-      setSelectedDays([]);
+      setSelectedDays([]);  // Custom mode - user selects days
     }
   };
 
+  // Toggle individual weekday selection
   const handleDayToggle = (day: Weekday) => {
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
   };
 
+  // Toggle vacation mode on/off
   const handleVacationModeToggle = () => {
     setVacationMode(!vacationMode);
   };
 
+  // Save all settings to localStorage with validation
+  // Validate and save all training settings to localStorage
   const handleSave = () => {
     if (selectedDays.length === 0) {
       alert(translations.atLeastOneDay);
       return;
     }
 
+    // Persist schedule, selected days, and vacation mode
     localStorage.setItem('trainingSchedule', schedule);
     localStorage.setItem('trainingDays', JSON.stringify(selectedDays));
     localStorage.setItem('vacationMode', vacationMode.toString());
 
+    // Show success feedback
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -243,10 +256,11 @@ export default function TrainingCalendarPage() {
           </div>
         </div>
 
-        {/* Weekday Selection */}
+        {/* Weekday Selection - toggle each day individually */}
         <div className="pb-6 border-b border-gray-200 dark:border-dark-700">
           <h3 className="font-semibold mb-4">{translations.weekdaysLabel}</h3>
           <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+            {/* Interactive buttons to select/deselect training days */}
             {WEEKDAYS.map((day) => (
               <button
                 key={day}
@@ -268,7 +282,7 @@ export default function TrainingCalendarPage() {
           </div>
         </div>
 
-        {/* Vacation Mode Toggle */}
+        {/* Vacation Mode Toggle - pause training temporarily */}
         <div>
           <h3 className="font-semibold mb-2 flex items-center gap-2">
             <AlertCircle size={20} />
@@ -277,6 +291,7 @@ export default function TrainingCalendarPage() {
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             {translations.vacationModeDesc}
           </p>
+          {/* Toggle switch with green active state */}
           <div className="flex items-center gap-3">
             <button
               onClick={handleVacationModeToggle}
@@ -304,7 +319,7 @@ export default function TrainingCalendarPage() {
           </div>
         </div>
 
-        {/* Save Button */}
+        {/* Save all settings to localStorage with validation */}
         <button
           onClick={handleSave}
           className={`w-full px-4 py-3 rounded-lg font-semibold transition-all text-white ${

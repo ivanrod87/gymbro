@@ -41,6 +41,7 @@ interface Translations {
 
 export default function MeasurementsPage() {
   const { language, theme, translate } = useTranslation();
+  // Load height unit preference from localStorage
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inch'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('heightUnit') as 'cm' | 'inch') || 'cm';
@@ -60,12 +61,14 @@ export default function MeasurementsPage() {
     }
     return '';
   });
+  // Load last entered weight from localStorage
   const [weight, setWeight] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('lastWeight') || '';
     }
     return '';
   });
+  // Load last selected body type from localStorage
   const [bodyType, setBodyType] = useState<BodyType>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('lastBodyType') as BodyType) || 'mesomorph';
@@ -73,7 +76,9 @@ export default function MeasurementsPage() {
     return 'mesomorph';
   });
 
+  // UI state for save operation feedback
   const [saving, setSaving] = useState(false);
+  // All saved measurements from localStorage
   const [history, setHistory] = useState<MeasurementEntry[]>([]);
 
   const [translations, setTranslations] = useState<Translations>({
@@ -199,6 +204,7 @@ export default function MeasurementsPage() {
 
     setSaving(true);
     try {
+      // Create new measurement entry with current timestamp
       const entry: MeasurementEntry = {
         id: `${Date.now()}`,
         height: parseFloat(height),
@@ -209,12 +215,13 @@ export default function MeasurementsPage() {
         dateTaken: new Date().toISOString(),
       };
 
+      // Save to localStorage
       saveMeasurementEntry(entry);
 
-      // Update local state
+      // Update local history display
       setHistory([...history, entry]);
 
-      // Persist last selected options
+      // Persist last selected values for next session
       localStorage.setItem('lastHeight', height);
       localStorage.setItem('lastWeight', weight);
       localStorage.setItem('lastBodyType', bodyType);
@@ -225,6 +232,7 @@ export default function MeasurementsPage() {
     }
   };
 
+  // Delete individual entry and update localStorage
   const handleDeleteEntry = (id: string) => {
     const updatedHistory = history.filter((entry) => entry.id !== id);
     setHistory(updatedHistory);
@@ -390,7 +398,7 @@ export default function MeasurementsPage() {
           {saving ? translations.saving : translations.save}
         </button>
 
-        {/* Measurement History */}
+        {/* Measurement History - all past entries with delete option */}
         <div className="pt-4 border-t border-gray-200 dark:border-dark-700">
           <h4 className="font-semibold mb-3">{translations.measurementHistory}</h4>
           {history.length === 0 ? (
@@ -411,6 +419,7 @@ export default function MeasurementsPage() {
                 </thead>
                 <tbody>
                   {history.map((entry) => {
+                    // Calculate BMI for each historical entry
                     const bmi = calculateBMI(entry.height, entry.heightUnit, entry.weight, entry.weightUnit);
                     const bmiCat = getBMICategory(bmi);
                     return (

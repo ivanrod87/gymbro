@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Google Gemini API endpoint (generative AI model)
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 export async function POST(request: NextRequest) {
   try {
+    // Extract prompt from request body
     const { prompt } = await request.json();
 
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
+    // Get API key from environment
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     if (!apiKey) {
       console.error('NEXT_PUBLIC_GEMINI_API_KEY is not set');
@@ -19,6 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Call Gemini API
     const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: {
@@ -46,6 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Extract text content from Gemini API response
     const data = await response.json();
     const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
@@ -57,21 +62,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse the JSON response
+    // Parse JSON response (handle markdown code blocks)
     try {
-      // Clean up JSON if it's wrapped in markdown code blocks
       let jsonStr = content.trim();
+      // Remove markdown code block wrappers if present (```json, ```, etc)
       if (jsonStr.startsWith('```json')) {
-        jsonStr = jsonStr.slice(7); // Remove ```json
+        jsonStr = jsonStr.slice(7);
       }
       if (jsonStr.startsWith('```')) {
-        jsonStr = jsonStr.slice(3); // Remove ```
+        jsonStr = jsonStr.slice(3);
       }
       if (jsonStr.endsWith('```')) {
-        jsonStr = jsonStr.slice(0, -3); // Remove trailing ```
+        jsonStr = jsonStr.slice(0, -3);
       }
       jsonStr = jsonStr.trim();
 
+      // Parse cleaned JSON response from AI
       const result = JSON.parse(jsonStr);
       return NextResponse.json({ result });
     } catch {

@@ -15,6 +15,7 @@ export default function HomePage() {
   const { language, translate } = useTranslation();
   const [vacationMode, setVacationMode] = useState(false);
 
+  // Default translations (English)
   const [translations, setTranslations] = useState<Translations>({
     home: 'Home',
     welcome: 'Welcome to your dashboard',
@@ -22,11 +23,12 @@ export default function HomePage() {
     vacationModeMessage: 'Your training schedule is currently paused',
   });
 
+  // Load vacation mode status and translations on mount
   useEffect(() => {
-    // Check vacation mode status
     const isVacationMode = localStorage.getItem('vacationMode') === 'true';
     setVacationMode(isVacationMode);
 
+    // Load translations based on selected language
     const loadTranslations = async () => {
       if (language === 'EN') {
         setTranslations({

@@ -150,13 +150,14 @@ export default function PreferencesPage() {
       </div>
 
       <div className="card-base space-y-6">
-        {/* Language Setting */}
+        {/* Language Selection - all UI text translates dynamically */}
         <div className="pb-6 border-b border-gray-200 dark:border-dark-700">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <Globe size={20} />
             {translations.language}
           </h3>
           <div className="grid grid-cols-3 gap-2">
+            {/* Select language and trigger async translation reload */}
             {SUPPORTED_LANGUAGES.map((lang) => (
               <button
                 key={lang}

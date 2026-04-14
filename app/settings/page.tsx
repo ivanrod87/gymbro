@@ -17,6 +17,7 @@ interface Translations {
 
 export default function SettingsPage() {
   const { language, translate } = useTranslation();
+  // Default translations (English)
   const [translations, setTranslations] = useState<Translations>({
     settings: 'Settings',
     preferences: 'Preferences',
@@ -27,6 +28,7 @@ export default function SettingsPage() {
     trainingCalendarDesc: 'Schedule and vacation mode',
   });
 
+  // Load translations based on selected language
   useEffect(() => {
     const loadTranslations = async () => {
       if (language === 'EN') {
@@ -66,6 +68,7 @@ export default function SettingsPage() {
     loadTranslations();
   }, [language, translate]);
 
+  // Navigation cards for each settings section
   const settingsGroups = [
     {
       title: translations.preferences,

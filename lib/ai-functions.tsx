@@ -148,7 +148,20 @@ export function getLatestMeasurement(): MeasurementEntry | null {
 }
 
 /**
- * Calculate BMI
+ * Delete measurement entry by ID from history
+ */
+export function deleteMeasurementEntry(id: string): void {
+  try {
+    const entries = getMeasurementHistory();
+    const filtered = entries.filter((e) => e.id !== id);
+    localStorage.setItem('measurementHistory', JSON.stringify(filtered));
+  } catch (error) {
+    console.error('Error deleting measurement entry:', error);
+  }
+}
+
+/**
+ * Calculate BMI using height and weight with unit conversion
  */
 export function calculateBMI(
   height: number,
@@ -156,17 +169,20 @@ export function calculateBMI(
   weight: number,
   weightUnit: 'kg' | 'lbs'
 ): number {
+  // Convert to standard units: meters and kilograms
   const heightMeters = heightUnit === 'cm' ? height / 100 : (height * 2.54) / 100;
   const weightKg = weightUnit === 'kg' ? weight : weight / 2.20462;
+  // BMI = weight(kg) / height²(m)
   return Math.round((weightKg / (heightMeters * heightMeters)) * 10) / 10;
 }
 
 /**
- * Get BMI category
+ * Get BMI category and color code for UI display
  */
 export function getBMICategory(
   bmi: number
 ): { category: string; color: string } {
+  // Return category with color based on BMI ranges (WHO standards)
   if (bmi < 18.5) {
     return { category: 'Underweight', color: 'text-blue-600' };
   } else if (bmi < 25) {
