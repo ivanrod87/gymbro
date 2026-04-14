@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Settings2, CalendarDays, Weight, ChevronRight } from 'lucide-react';
+import { Settings2, CalendarDays, Weight, BicepsFlexed, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
 
@@ -10,9 +10,11 @@ interface Translations {
   preferences: string;
   measurements: string;
   trainingCalendar: string;
+  workoutSplit: string;
   preferencesDesc: string;
   measurementsDesc: string;
   trainingCalendarDesc: string;
+  workoutSplitDesc: string;
 }
 
 export default function SettingsPage() {
@@ -22,9 +24,11 @@ export default function SettingsPage() {
     preferences: 'Preferences',
     measurements: 'Measurements',
     trainingCalendar: 'Training Calendar',
+    workoutSplit: 'Workout Split',
     preferencesDesc: 'Language and theme settings',
     measurementsDesc: 'Body weight and metrics',
     trainingCalendarDesc: 'Schedule and vacation mode',
+    workoutSplitDesc: 'Choose your preferred workout split',
   });
 
   useEffect(() => {
@@ -35,9 +39,11 @@ export default function SettingsPage() {
           preferences: 'Preferences',
           measurements: 'Measurements',
           trainingCalendar: 'Training Calendar',
+          workoutSplit: 'Workout Split',
           preferencesDesc: 'Language and theme settings',
           measurementsDesc: 'Body weight and metrics',
           trainingCalendarDesc: 'Schedule and vacation mode',
+          workoutSplitDesc: 'Choose your preferred workout split',
         });
         return;
       }
@@ -47,9 +53,11 @@ export default function SettingsPage() {
         translate('Preferences'),
         translate('Measurements'),
         translate('Training Calendar'),
+        translate('Workout Split'),
         translate('Language and theme settings'),
         translate('Body weight and metrics'),
         translate('Schedule and vacation mode'),
+        translate('Choose your preferred workout split'),
       ]);
 
       setTranslations({
@@ -57,9 +65,11 @@ export default function SettingsPage() {
         preferences: translated[1],
         measurements: translated[2],
         trainingCalendar: translated[3],
-        preferencesDesc: translated[4],
-        measurementsDesc: translated[5],
-        trainingCalendarDesc: translated[6],
+        workoutSplit: translated[4],
+        preferencesDesc: translated[5],
+        measurementsDesc: translated[6],
+        trainingCalendarDesc: translated[7],
+        workoutSplitDesc: translated[8],
       });
     };
 
@@ -84,6 +94,12 @@ export default function SettingsPage() {
       description: translations.trainingCalendarDesc,
       icon: CalendarDays,
       href: '/settings/training-calendar',
+    },
+    {
+      title: translations.workoutSplit,
+      description: translations.workoutSplitDesc,
+      icon: BicepsFlexed,
+      href: '/settings/workout-split',
     },
   ];
 
