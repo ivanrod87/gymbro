@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, ChevronLeft, AlertCircle } from 'lucide-react';
+import { Calendar, ChevronLeft, TreePalm } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
 import { useToast } from '@/lib/useToast';
@@ -274,7 +274,7 @@ export default function TrainingCalendarPage() {
         {/* Vacation Mode Toggle */}
         <div>
           <h3 className="font-semibold mb-2 flex items-center gap-2">
-            <AlertCircle size={20} />
+            <TreePalm size={20} />
             {translations.vacationMode}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Settings, Sliders, Scale, Calendar, ChevronRight } from 'lucide-react';
+import { Settings2, CalendarDays, Weight, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
 
@@ -70,19 +70,19 @@ export default function SettingsPage() {
     {
       title: translations.preferences,
       description: translations.preferencesDesc,
-      icon: Sliders,
+      icon: Settings2,
       href: '/settings/preferences',
     },
     {
       title: translations.measurements,
       description: translations.measurementsDesc,
-      icon: Scale,
+      icon: Weight,
       href: '/settings/measurements',
     },
     {
       title: translations.trainingCalendar,
       description: translations.trainingCalendarDesc,
-      icon: Calendar,
+      icon: CalendarDays,
       href: '/settings/training-calendar',
     },
   ];
@@ -100,8 +100,8 @@ export default function SettingsPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <IconComponent size={24} className="text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 bg-dark-800 rounded-lg">
+                    <IconComponent size={24} className="text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-50">
