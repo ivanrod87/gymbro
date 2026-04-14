@@ -78,6 +78,7 @@ export default function MeasurementsPage() {
 
   const [saving, setSaving] = useState(false);
   const [history, setHistory] = useState<MeasurementEntry[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const [translations, setTranslations] = useState<Translations>({
     measurements: 'Measurements',
@@ -108,6 +109,11 @@ export default function MeasurementsPage() {
     // Load measurement history
     const measurementHistory = getMeasurementHistory();
     setHistory(measurementHistory);
+  }, []);
+
+  useEffect(() => {
+    // Set hydration flag after client mount to fix hydration mismatch
+    setIsHydrated(true);
   }, []);
 
   useEffect(() => {
@@ -348,7 +354,7 @@ export default function MeasurementsPage() {
         </div>
 
         {/* BMI Display */}
-        {currentBMI && bmiInfo && (
+        {isHydrated && currentBMI && bmiInfo && (
           <div className="p-4 bg-gray-50 dark:bg-dark-600 rounded-lg">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">{translations.bmi}:</span>
