@@ -3,11 +3,49 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Dumbbell, BarChart3, Settings } from 'lucide-react';
+import { useTranslation } from '@/lib/TranslationContext';
+import { useEffect, useState } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { language, translate } = useTranslation();
+  const [translatedLabels, setTranslatedLabels] = useState({
+    home: 'Home',
+    workout: 'Workout',
+    analytics: 'Analytics',
+    settings: 'Settings',
+  });
 
   const isActive = (path: string) => pathname?.startsWith(path);
+
+  // Translate navbar labels when language changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      if (language === 'EN') {
+        setTranslatedLabels({
+          home: 'Home',
+          workout: 'Workout',
+          analytics: 'Analytics',
+          settings: 'Settings',
+        });
+      } else {
+        const translated = await Promise.all([
+          translate('Home'),
+          translate('Workout'),
+          translate('Analytics'),
+          translate('Settings'),
+        ]);
+        setTranslatedLabels({
+          home: translated[0],
+          workout: translated[1],
+          analytics: translated[2],
+          settings: translated[3],
+        });
+      }
+    };
+
+    loadTranslations();
+  }, [language, translate]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-dark-800 dark:border-dark-700 safe-area-inset-bottom transition-colors duration-200">
@@ -16,25 +54,25 @@ export default function Navbar() {
           <NavLink
             href="/home"
             icon={<Home size={24} />}
-            label="Home"
+            label={translatedLabels.home}
             active={isActive('/home')}
           />
           <NavLink
             href="/workout"
             icon={<Dumbbell size={24} />}
-            label="Workout"
+            label={translatedLabels.workout}
             active={isActive('/workout')}
           />
           <NavLink
             href="/analytics"
             icon={<BarChart3 size={24} />}
-            label="Analytics"
+            label={translatedLabels.analytics}
             active={isActive('/analytics')}
           />
           <NavLink
             href="/settings"
             icon={<Settings size={24} />}
-            label="Settings"
+            label={translatedLabels.settings}
             active={isActive('/settings')}
           />
         </div>
