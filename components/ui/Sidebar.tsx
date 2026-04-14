@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Home, Dumbbell, BarChart3, Settings } from 'lucide-react';
 import { useTranslation } from '@/lib/TranslationContext';
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -48,9 +49,9 @@ export default function Sidebar() {
   }, [language, translate]);
 
   return (
-    <aside className="hidden md:flex fixed left-0 top-0 h-screen w-20 hover:w-64 bg-white dark:bg-dark-800 border-r border-gray-200 dark:border-dark-700 flex-col items-stretch transition-all duration-200 z-50 group">
+    <aside className="hidden md:flex fixed left-0 top-0 h-screen w-20 hover:w-64 bg-white dark:bg-dark-900 flex-col items-stretch transition-all duration-200 z-50 group">
       {/* Logo/Branding Area */}
-      <div className="h-20 flex items-center justify-center border-b border-gray-200 dark:border-dark-700 flex-shrink-0">
+      <div className="h-20 flex items-center justify-center flex-shrink-0">
         <div className="text-2xl font-bold text-blue-500 group-hover:flex hidden">GB</div>
         <div className="text-xl font-bold text-blue-500 group-hover:hidden">💪</div>
       </div>
@@ -84,7 +85,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer area */}
-      <div className="h-20 border-t border-gray-200 dark:border-dark-700 flex items-center justify-center text-xs text-gray-400 group-hover:text-left group-hover:px-4">
+      <div className="h-20 flex items-center justify-center text-xs text-gray-400 group-hover:text-left group-hover:px-4">
         <span className="hidden group-hover:block">v1.0</span>
       </div>
     </aside>
@@ -102,17 +103,29 @@ function SidebarLink({
   label: string;
   active: boolean;
 }) {
+  // Determine if icon should be filled (Home, Settings)
+  const isFillableIcon = href === '/home' || href === '/settings';
+  // Determine if label should be bold (Workout, Analytics)
+  const isBoldableLabel = href === '/workout' || href === '/analytics';
+
   return (
     <Link
       href={href}
       className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all whitespace-nowrap ${
         active
-          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 hover:text-gray-700 dark:hover:text-gray-200'
+          ? 'text-white'
+          : 'text-gray-500 dark:text-white hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-gray-700'
       }`}
     >
-      <span className="flex-shrink-0">{icon}</span>
-      <span className="hidden group-hover:inline text-sm font-medium">{label}</span>
+      <span className={`flex-shrink-0 ${active && isFillableIcon ? 'opacity-100' : ''}`}>
+        {React.cloneElement(icon as React.ReactElement, {
+          fill: active && isFillableIcon ? 'currentColor' : 'none',
+          strokeWidth: active && isFillableIcon ? 2.5 : 2,
+        })}
+      </span>
+      <span className={`hidden group-hover:inline text-sm font-medium ${active && isBoldableLabel ? 'font-bold' : ''}`}>
+        {label}
+      </span>
     </Link>
   );
 }
