@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Globe, ChevronLeft, Ruler, Dumbbell } from 'lucide-react';
+import { Sun, Moon, Globe, ChevronLeft, Ruler } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
 import { SUPPORTED_LANGUAGES, getLanguageName } from '@/lib/translate';
@@ -22,9 +22,6 @@ interface Translations {
   inch: string;
   kg: string;
   lbs: string;
-  pplOrder: string;
-  startWithPush: string;
-  startWithPull: string;
 }
 
 export default function PreferencesPage() {
@@ -32,7 +29,6 @@ export default function PreferencesPage() {
     useTranslation();
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inch'>('cm');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
-  const [pplOrder, setPplOrder] = useState<'push' | 'pull'>('push');
 
   const [translations, setTranslations] = useState<Translations>({
     preferences: 'Preferences',
@@ -50,20 +46,15 @@ export default function PreferencesPage() {
     inch: 'Inches',
     kg: 'Kilograms',
     lbs: 'Pounds',
-    pplOrder: 'PPL Order',
-    startWithPush: 'Start with Push',
-    startWithPull: 'Start with Pull',
   });
 
   useEffect(() => {
     // Load preferences from localStorage
     const savedHeightUnit = (localStorage.getItem('heightUnit') as 'cm' | 'inch' | null) || 'cm';
     const savedWeightUnit = (localStorage.getItem('weightUnit') as 'kg' | 'lbs' | null) || 'kg';
-    const savedPplOrder = (localStorage.getItem('pplOrder') as 'push' | 'pull' | null) || 'push';
 
     setHeightUnit(savedHeightUnit);
     setWeightUnit(savedWeightUnit);
-    setPplOrder(savedPplOrder);
     
     const loadTranslations = async () => {
       if (language === 'EN') {
@@ -83,9 +74,6 @@ export default function PreferencesPage() {
           inch: 'Inches',
           kg: 'Kilograms',
           lbs: 'Pounds',
-          pplOrder: 'PPL Order',
-          startWithPush: 'Start with Push',
-          startWithPull: 'Start with Pull',
         });
         return;
       }
@@ -106,9 +94,6 @@ export default function PreferencesPage() {
         translate('Inches'),
         translate('Kilograms'),
         translate('Pounds'),
-        translate('PPL Order'),
-        translate('Start with Push'),
-        translate('Start with Pull'),
       ]);
 
       setTranslations({
@@ -127,9 +112,6 @@ export default function PreferencesPage() {
         inch: translated[12],
         kg: translated[13],
         lbs: translated[14],
-        pplOrder: translated[15],
-        startWithPush: translated[16],
-        startWithPull: translated[17],
       });
     };
 
@@ -288,41 +270,7 @@ export default function PreferencesPage() {
           </div>
         </div>
 
-        {/* PPL Order */}
-        <div>
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <Dumbbell size={20} />
-            {translations.pplOrder}
-          </h3>
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                setPplOrder('push');
-                localStorage.setItem('pplOrder', 'push');
-              }}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                pplOrder === 'push'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 text-gray-900 dark:text-gray-50 hover:bg-gray-300 dark:hover:bg-dark-600'
-              }`}
-            >
-              {translations.startWithPush}
-            </button>
-            <button
-              onClick={() => {
-                setPplOrder('pull');
-                localStorage.setItem('pplOrder', 'pull');
-              }}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                pplOrder === 'pull'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-dark-700 border border-gray-300 dark:border-dark-600 text-gray-900 dark:text-gray-50 hover:bg-gray-300 dark:hover:bg-dark-600'
-              }`}
-            >
-              {translations.startWithPull}
-            </button>
-          </div>
-        </div>
+
       </div>
     </div>
   );

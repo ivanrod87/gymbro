@@ -63,12 +63,16 @@ export default function WorkoutSplitPage() {
 
   const [startingPosition, setStartingPosition] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('workoutSplitPosition') || '';
+      const savedSplit = localStorage.getItem('workoutSplit') as SplitType;
+      if (savedSplit) {
+        return localStorage.getItem(`workoutSplitPosition_${savedSplit}`) || '';
+      }
     }
     return '';
   });
 
   const [saved, setSaved] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const [translations, setTranslations] = useState<Translations>({
     workoutSplit: 'Workout Split',
@@ -92,6 +96,10 @@ export default function WorkoutSplitPage() {
     arnoldDescription: 'Groups muscles by paired body parts for high training volume.',
     hybridDescription: 'Combines elements from different training styles.',
   });
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     const loadTranslations = async () => {
@@ -177,22 +185,43 @@ export default function WorkoutSplitPage() {
       return;
     }
 
-    if (!startingPosition) {
+    const positionOptions = getPositionOptionsForSplit(selectedSplit);
+    if (positionOptions.length > 0 && !startingPosition) {
       showToast('Please select a starting position', 'error');
       return;
     }
 
     // Save to localStorage (temporary, will migrate to database later)
     localStorage.setItem('workoutSplit', selectedSplit);
-    localStorage.setItem('workoutSplitPosition', startingPosition);
+    if (startingPosition) {
+      localStorage.setItem(`workoutSplitPosition_${selectedSplit}`, startingPosition);
+    }
 
     setSaved(true);
     showToast(translations.saved, 'success');
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const getPositionOptions = () => {
-    switch (selectedSplit) {
+  const handleSplitSelect = (splitName: SplitType) => {
+    setSelectedSplit(splitName);
+    
+    // Load saved position for this split or set first option as default
+    const savedPosition = localStorage.getItem(`workoutSplitPosition_${splitName}`);
+    if (savedPosition) {
+      setStartingPosition(savedPosition);
+    } else {
+      // Get the first option for this split
+      const options = getPositionOptionsForSplit(splitName);
+      if (options.length > 0) {
+        setStartingPosition(options[0].value);
+      } else {
+        setStartingPosition('');
+      }
+    }
+  };
+
+  const getPositionOptionsForSplit = (split: SplitType) => {
+    switch (split) {
       case 'PPL':
         return [
           { value: 'push', label: translations.pushFirst },
@@ -222,57 +251,77 @@ export default function WorkoutSplitPage() {
 
       <h1 className="text-2xl font-bold">{translations.workoutSplit}</h1>
 
-      {/* Split Selection */}
-      <div className="space-y-3">
-        <h2 className="font-semibold text-lg">{translations.selectSplit}</h2>
-        {SPLITS.map((split) => (
-          <button
-            key={split.name}
-            onClick={() => {
-              setSelectedSplit(split.name as SplitType);
-              setStartingPosition(''); // Reset position when changing split
-            }}
-            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-              selectedSplit === split.name
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-200 dark:border-dark-600 hover:border-gray-300 dark:hover:border-dark-500'
-            }`}
-          >
-            <h3 className="font-semibold">{split.name}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{split.description}</p>
-          </button>
-        ))}
-      </div>
+      {/* Only render after hydration to avoid SSR mismatch */}
+      {isHydrated ? (
+        <>
+          {/* Split Selection with Accordion */}
+          <div className="space-y-3">
+            <h2 className="font-semibold text-lg">{translations.selectSplit}</h2>
+            {SPLITS.map((split) => {
+              const isSelected = selectedSplit === split.name;
+              const positionOptions = getPositionOptionsForSplit(split.name as SplitType);
 
-      {/* Position Selection - Only show if split selected and has position options */}
-      {selectedSplit && getPositionOptions().length > 0 && (
-        <div className="space-y-3">
-          <h2 className="font-semibold text-lg">{translations.startingPosition}</h2>
-          <div className="space-y-2">
-            {getPositionOptions().map((option) => (
-              <label key={option.value} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800 cursor-pointer">
-                <input
-                  type="radio"
-                  name="position"
-                  value={option.value}
-                  checked={startingPosition === option.value}
-                  onChange={(e) => setStartingPosition(e.target.value)}
-                  className="w-4 h-4"
-                />
-                <span>{option.label}</span>
-              </label>
-            ))}
+              return (
+                <div
+                  key={split.name}
+                  className="rounded-lg border-2 transition-all overflow-hidden"
+                  style={{
+                    borderColor: isSelected ? '#3b82f6' : '#e0e0e0',
+                  }}
+                >
+                  {/* Split Header */}
+                  <button
+                    onClick={() => handleSplitSelect(split.name as SplitType)}
+                    className={`w-full p-4 text-left transition-all ${
+                      isSelected
+                        ? 'bg-blue-50 dark:bg-blue-900/20'
+                        : 'hover:bg-gray-50 dark:hover:bg-dark-800'
+                    }`}
+                  >
+                    <h3 className="font-semibold">{split.name}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{split.description}</p>
+                  </button>
+
+                  {/* Position Options - Show under selected split */}
+                  {isSelected && positionOptions.length > 0 && (
+                    <div className="border-t border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-800/50 p-4 space-y-2">
+                      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                        {translations.startingPosition}
+                      </h4>
+                      {positionOptions.map((option) => (
+                        <label
+                          key={option.value}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 cursor-pointer transition-colors"
+                        >
+                          <input
+                            type="radio"
+                            name="position"
+                            value={option.value}
+                            checked={startingPosition === option.value}
+                            onChange={(e) => setStartingPosition(e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-sm">{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </div>
-      )}
 
-      {/* Save Button */}
-      <button
-        onClick={handleSave}
-        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-      >
-        {translations.save}
-      </button>
+          {/* Save Button */}
+          <button
+            onClick={handleSave}
+            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+          >
+            {translations.save}
+          </button>
+        </>
+      ) : (
+        <div className="h-40 flex items-center justify-center text-gray-400">Loading...</div>
+      )}
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
