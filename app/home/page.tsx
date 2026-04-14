@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { TreePalm } from 'lucide-react';
 import { useTranslation } from '@/lib/TranslationContext';
 
 interface Translations {
@@ -64,7 +64,7 @@ export default function HomePage() {
       {/* Vacation Mode Alert */}
       {vacationMode && (
         <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-lg flex gap-3">
-          <AlertTriangle size={20} className="text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <TreePalm size={20} className="text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
           <div>
             <h3 className="font-semibold text-yellow-900 dark:text-yellow-100">
               {translations.vacationModeActive}

@@ -103,8 +103,6 @@ function SidebarLink({
   label: string;
   active: boolean;
 }) {
-  // Determine if icon should be filled (Home, Settings)
-  const isFillableIcon = href === '/home' || href === '/settings';
   // Determine if label should be bold (Workout, Analytics)
   const isBoldableLabel = href === '/workout' || href === '/analytics';
 
@@ -117,10 +115,10 @@ function SidebarLink({
           : 'text-gray-500 dark:text-white hover:bg-gray-100 dark:hover:bg-dark-800 hover:text-gray-700'
       }`}
     >
-      <span className={`flex-shrink-0 ${active && isFillableIcon ? 'opacity-100' : ''}`}>
+      <span className="flex-shrink-0">
         {React.cloneElement(icon as React.ReactElement, {
-          fill: active && isFillableIcon ? 'currentColor' : 'none',
-          strokeWidth: active && isFillableIcon ? 2.5 : 2,
+          fill: 'none',
+          strokeWidth: active ? 3 : 2,
         })}
       </span>
       <span className={`hidden group-hover:inline text-sm font-medium ${active && isBoldableLabel ? 'font-bold' : ''}`}>

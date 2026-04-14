@@ -93,8 +93,6 @@ function NavLink({
   label: string;
   active: boolean;
 }) {
-  // Determine if icon should be filled (Home, Settings)
-  const isFillableIcon = href === '/home' || href === '/settings';
   // Determine if label should be bold (Workout, Analytics)
   const isBoldableLabel = href === '/workout' || href === '/analytics';
 
@@ -107,13 +105,13 @@ function NavLink({
           : 'text-gray-500 dark:text-white'
       }`}
     >
-      <span className={`flex-shrink-0 ${active && isFillableIcon ? 'opacity-100' : ''}`}>
+      <span className="flex-shrink-0">
         {React.cloneElement(icon as React.ReactElement, {
-          fill: active && isFillableIcon ? 'currentColor' : 'none',
-          strokeWidth: active && isFillableIcon ? 2.5 : 2,
+          fill: 'none',
+          strokeWidth: active ? 3 : 2,
         })}
       </span>
-      <span className={`text-xs font-medium ${active && isBoldableLabel ? 'font-bold' : ''}`}>
+      <span className={`text-xs font-medium hidden md:inline ${active && isBoldableLabel ? 'font-bold' : ''}`}>
         {label}
       </span>
     </Link>
