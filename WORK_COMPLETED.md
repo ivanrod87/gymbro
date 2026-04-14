@@ -1,9 +1,180 @@
-# WORK COMPLETED - GymBro Sprint 2
+# WORK COMPLETED - GymBro Sprint 2 (Updated)
 
 ## Session Summary
-This document completes the GymBro Sprint 2 implementation session, covering the Settings hub refactor with 3 new specialized subpages (Preferences, Measurements, Training Calendar), full localStorage persistence, and Google Gemini API integration.
+This document details the complete GymBro Sprint 2 implementation, covering the Settings hub refactor with 3 specialized subpages, full localStorage persistence, Google Gemini API integration, code quality improvements, enhanced UX with soft notifications, and responsive layout restructuring for desktop and mobile views.
 
-## Issues Fixed
+## Recent Session Enhancements
+
+### 1. Code Quality & Documentation
+**Objective:** Add light, simple code comments throughout the codebase for maintainability
+
+**Implementation:**
+- Added clear, concise comments to all newly implemented pages
+- Comments explain key logic without being verbose
+- Focused on complex calculations (BMI formula with WHO standards)
+- Documented state management patterns
+- Mentioned API integration details
+
+**Files Updated:**
+- `app/settings/page.tsx` - Settings groups navigation
+- `app/settings/preferences/page.tsx` - Translation and preference logic
+- `app/settings/measurements/page.tsx` - Data persistence and calculations
+- `app/settings/training-calendar/page.tsx` - Schedule and vacation mode handling
+- `app/home/page.tsx` - Vacation mode detection
+- `lib/ai-functions.tsx` - BMI calculations with notes
+- `app/api/ai/analyze/route.ts` - Gemini API integration
+
+**Status:** ✅ COMPLETE
+
+### 2. Toast Notification System
+**Objective:** Replace harsh JavaScript alerts with soft, elegant toast notifications
+
+**User Requirements Met:**
+- ✅ "Something softer that shows up in the bottom left" → Implemented top-right
+- ✅ "Pastel dark green color with white text" → emerald-700 with 15% transparency
+- ✅ "Fade in and fade out effect" → Slow 0.5s CSS keyframe animations
+- ✅ "Now make it appear on top right with a slow fade in and out effect" → Final positioning
+
+**Architecture:**
+```
+Custom Hook: lib/useToast.ts
+├── State: Array of toast objects (id, message, type)
+├── Methods:
+│   ├── showToast(message, type, duration) - Display notification
+│   └── removeToast(id) - Manual dismiss
+└── Auto-dismiss: 3-second timeout with callback
+
+Component: components/ToastContainer.tsx
+├── Renders array of active toasts
+├── CSS Keyframes:
+│   ├── fadeInSlow: 0.5s opacity + translateY(-10px → 0)
+│   └── fadeOutSlow: 0.5s reverse with timing callback
+├── Styling: Emerald-700 background (15% transparent), white text
+├── Positioning: Fixed top-4 right-4 z-50
+├── Interactivity: Click to dismiss, hover effects
+└── Animation timing: onAnimationEnd callback for lifecycle
+```
+
+**Replaced Alerts (3 total):**
+1. Measurements page - "Please enter height and weight" (validation error)
+2. Measurements page - "Measurement saved successfully!" (success)
+3. Training Calendar page - "At least one day must be selected" (validation error)
+
+**Toast Features:**
+- Silent, non-intrusive notifications
+- Auto-dismiss after 3 seconds
+- Manual click-to-dismiss
+- Smooth entrance animation
+- Subtle upward slide with fade
+- Dark mode compatible
+- Hover effects (darker emerald on hover)
+- Proper z-indexing for layering
+
+**Status:** ✅ COMPLETE
+
+### 3. Responsive Layout Restructure
+**Objective:** Create proper desktop vs mobile/tablet layouts
+
+**Desktop Layout (≥768px - md breakpoint):**
+- Left sidebar with icon-only navigation (80px wide)
+- Hover expansion to show labels (256px wide) - Instagram-style
+- 4 navigation items: Home, Workout, Analytics, Settings
+- Active state highlighting (blue background)
+- Smooth hover transitions
+- Branding area and version footer
+- Full sidebar height (100vh) with fixed positioning
+
+**Mobile/Tablet Layout (<768px):**
+- Preserved existing bottom navbar (unchanged from Sprint 1)
+- Fixed at bottom with safe area support
+- 4 icon buttons spanning full width
+- Active state styling maintained
+- Bottom padding for navbar space (pb-20)
+
+**Layout System:**
+```
+Root Layout (app/layout.tsx)
+├── Desktop (md:flex-row)
+│   ├── Sidebar (hidden md:flex, absolute left-0)
+│   ├── Content (flex-1, ml-20 offset)
+│   └── Navbar (md:hidden - hidden on desktop)
+└── Mobile (flex-col)
+    ├── Navbar (md:hidden - visible)
+    ├── Content (flex-1, full width)
+    └── Padding (pb-20 for navbar)
+```
+
+**Responsive Padding:**
+- Mobile: `px-4 pt-4 pb-20`
+- Desktop: `px-8 pt-6 pb-4`
+
+**Content Max-Width (Desktop):**
+- Global: `max-w-7xl mx-auto` for reasonable column width
+- Settings pages: Additional `max-w-[800px]` constraint
+
+**Files Created:**
+- `components/ui/Sidebar.tsx` - Complete desktop sidebar implementation
+
+**Files Modified:**
+- `components/ui/Navbar.tsx` - Added `md:hidden` class for mobile-only
+- `app/layout.tsx` - Restructured for responsive flexbox and both components
+
+**Technical Details:**
+- Tailwind responsive classes (`md:` breakpoint at 768px)
+- CSS Group utilities for hover state management
+- Z-indexing: Sidebar `z-50` for proper layering
+- Smooth transitions with `transition-all duration-200`
+- Full dark mode support on sidebar
+
+**Status:** ✅ COMPLETE
+
+### 4. Settings Pages Content Width Optimization
+**Objective:** Prevent content stretching on desktop, maintain fair proportions
+
+**Implementation:**
+- Added max-width constraint of 800px to all settings pages
+- Used `max-w-[800px]` Tailwind arbitrary value
+- Added `mx-auto` for horizontal centering
+- Removed page title from main settings page (cleaner appearance)
+
+**Applied To:**
+- `app/settings/page.tsx` - Settings hub (removed "Settings" title)
+- `app/settings/preferences/page.tsx` - Preferences controls
+- `app/settings/measurements/page.tsx` - Metrics tracking
+- `app/settings/training-calendar/page.tsx` - Schedule and vacation mode
+
+**Benefits:**
+- Improves content readability on ultra-wide displays
+- Maintains consistent spacing and proportions
+- Better mobile-to-desktop scaling
+- Professional, focused presentation
+
+**Status:** ✅ COMPLETE
+
+### 5. Hydration Mismatch Resolution
+**Issue:** Next.js/React hydration warnings due to server/client render differences
+**Root Cause:** localStorage-dependent state initialized differently on server vs client
+**Solution:** Hydration flag with client-side mount check
+
+**Implementation:**
+```typescript
+const [isHydrated, setIsHydrated] = useState(false);
+
+useEffect(() => {
+  // Set hydration flag after client mount to fix hydration mismatch
+  setIsHydrated(true);
+}, []);
+
+// Only render localStorage-dependent content when hydrated
+{isHydrated && currentBMI && bmiInfo && (
+  <div>{...}</div>
+)}
+```
+
+**File Modified:** `app/settings/measurements/page.tsx`
+**Status:** ✅ RESOLVED
+
+## Issues Fixed in This Session
 1. **Training Calendar Syntax Error (Duplicate Code)** - FIXED
    - File: app/settings/training-calendar/page.tsx
    - Problem: Two component implementations merged, orphaned code at lines 323-384
@@ -130,7 +301,7 @@ This document completes the GymBro Sprint 2 implementation session, covering the
 3. Code comments in all new subpages for maintainability
 4. Type definitions (Translations interfaces) for type safety
 
-## Files Created in Sprint 2
+## Files Created (Sprint 2 & Enhancements)
 - `app/settings/page.tsx` - Settings hub with card navigation
 - `app/settings/preferences/page.tsx` - User preferences configuration
 - `app/settings/measurements/page.tsx` - Body metrics tracking
@@ -138,19 +309,32 @@ This document completes the GymBro Sprint 2 implementation session, covering the
 - `app/api/ai/analyze/route.ts` - Gemini API integration endpoint
 - `lib/ai-functions.tsx` - AI helper functions and data management
 - `lib/ai-prompts.tsx` - Prompt templates for Gemini API
+- `lib/useToast.ts` - Custom React hook for toast notifications (NEW)
+- `components/ToastContainer.tsx` - Toast UI component (NEW)
+- `components/ui/Sidebar.tsx` - Desktop sidebar navigation (NEW)
 
-## Files Modified in Sprint 2
-- `app/home/page.tsx` - Added vacation mode alert display
-- `app/layout.tsx` - Updated meta tags and theme configuration
+## Files Modified (Sprint 2 & Enhancements)
+- `app/home/page.tsx` - Added vacation mode alert display + hydration fixes
+- `app/layout.tsx` - Updated for responsive layout with sidebar and navbar
+- `components/ui/Navbar.tsx` - Added md:hidden for mobile-only display
+- `app/settings/page.tsx` - Added max-width constraint, removed title
+- `app/settings/preferences/page.tsx` - Added max-width constraint, comments
+- `app/settings/measurements/page.tsx` - Added max-width constraint, comments, hydration fix, toast integration
+- `app/settings/training-calendar/page.tsx` - Added max-width constraint, comments, toast integration
 
 ## Current Application Status
 - ✅ Sprint 1 complete (4-page app with navbar, translation, theme)
 - ✅ Sprint 2 complete (Settings hub with 3 specialized subpages)
+- ✅ Code documentation: Light comments throughout codebase
+- ✅ UX enhancement: Soft toast notification system (replaces alerts)
+- ✅ Layout restructure: Responsive sidebar (desktop) + navbar (mobile)
+- ✅ Content optimization: 800px max-width on settings pages
 - ✅ Full localStorage persistence for all user data
 - ✅ Multi-language support (EN/PT/FR) across all pages
 - ✅ Dark/light theme toggle with persistence
 - ✅ Google Gemini API integration (available for future features)
 - ✅ Zero runtime errors
+- ✅ Hydration mismatch resolved
 - ✅ All features tested and verified
 - ✅ Production-ready code structure
 - ✅ Ready for Sprint 3 or database migration
@@ -194,10 +378,23 @@ type Weekday = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
 5. **Future:** Add authentication and user accounts
 6. **Future:** Deploy to production (Vercel or similar)
 
-## Sign-Off
-All Sprint 2 work is complete and verified. The GymBro application now features a fully-functional Settings system with 3 specialized subpages, complete localStorage persistence, multi-language support, and Google Gemini AI integration. The codebase is well-structured, properly typed with TypeScript, and ready for continued development or database migration.
+## Final Sign-Off
+All Sprint 2 work is complete and verified. The GymBro application now features:
+- A fully-functional Settings system with 3 specialized subpages
+- Complete localStorage persistence across all user data
+- Multi-language support (EN/PT/FR) on all pages
+- Google Gemini AI integration (available for future use)
+- Enhanced UX with soft toast notifications (replacing harsh alerts)
+- Responsive layout with desktop sidebar and mobile bottom navigation
+- Optimized content presentation on all screen sizes
+- Full code documentation for maintainability
+- Zero compilation errors
+- Production-ready architecture
 
-**Date:** April 14, 2026
+The codebase is well-structured, properly typed with TypeScript, responsive on all devices, and ready for continued development or database migration to Prisma.
+
+**Last Updated:** April 14, 2026
+**Status:** ✅ COMPLETE & VERIFIED
 **Sprint:** Sprint 2 - Settings Hub & Body Metrics
 **Status:** ✅ COMPLETE AND VERIFIED
 **Build Status:** ✅ CLEAN COMPILE, ZERO ERRORS
