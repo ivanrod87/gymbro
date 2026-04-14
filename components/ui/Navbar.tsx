@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Home, Dumbbell, BarChart3, Settings } from 'lucide-react';
 import { useTranslation } from '@/lib/TranslationContext';
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -48,7 +49,7 @@ export default function Navbar() {
   }, [language, translate]);
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-dark-800 dark:border-dark-700 safe-area-inset-bottom transition-colors duration-200">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-900 safe-area-inset-bottom transition-colors duration-200">
       <div className="container mx-auto max-w-md">
         <div className="flex justify-around items-stretch">
           <NavLink
@@ -92,17 +93,29 @@ function NavLink({
   label: string;
   active: boolean;
 }) {
+  // Determine if icon should be filled (Home, Settings)
+  const isFillableIcon = href === '/home' || href === '/settings';
+  // Determine if label should be bold (Workout, Analytics)
+  const isBoldableLabel = href === '/workout' || href === '/analytics';
+
   return (
     <Link
       href={href}
-      className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-colors ${
+      className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-colors rounded-lg md:hover:bg-dark-800 ${
         active
-          ? 'text-blue-500 bg-blue-50 dark:bg-dark-700'
-          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+          ? 'text-gray-500 dark:text-white'
+          : 'text-gray-500 dark:text-white'
       }`}
     >
-      {icon}
-      <span className="text-xs font-medium">{label}</span>
+      <span className={`flex-shrink-0 ${active && isFillableIcon ? 'opacity-100' : ''}`}>
+        {React.cloneElement(icon as React.ReactElement, {
+          fill: active && isFillableIcon ? 'currentColor' : 'none',
+          strokeWidth: active && isFillableIcon ? 2.5 : 2,
+        })}
+      </span>
+      <span className={`text-xs font-medium ${active && isBoldableLabel ? 'font-bold' : ''}`}>
+        {label}
+      </span>
     </Link>
   );
 }
