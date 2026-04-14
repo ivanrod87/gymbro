@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Calendar, ChevronLeft, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
+import { useToast } from '@/lib/useToast';
+import { ToastContainer } from '@/components/ToastContainer';
 
 type ScheduleType = '3-day' | '5-day' | '6-day' | 'custom';
 type Weekday = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
@@ -42,6 +44,7 @@ const SCHEDULE_PRESETS: Record<ScheduleType, Weekday[] | null> = {
 
 export default function TrainingCalendarPage() {
   const { language, translate } = useTranslation();
+  const { toasts, showToast, removeToast } = useToast();
   const [schedule, setSchedule] = useState<ScheduleType>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('trainingSchedule') as ScheduleType) || '3-day';
@@ -189,7 +192,7 @@ export default function TrainingCalendarPage() {
 
   const handleSave = () => {
     if (selectedDays.length === 0) {
-      alert(translations.atLeastOneDay);
+      showToast(translations.atLeastOneDay, 'error');
       return;
     }
 
@@ -316,6 +319,9 @@ export default function TrainingCalendarPage() {
           {saved ? translations.saved : translations.save}
         </button>
       </div>
+
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
 }
