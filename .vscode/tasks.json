@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Clean and Reinstall Node Modules",
+			"type": "shell",
+			"command": "rmdir /s /q .next && rmdir /s /q node_modules && del package-lock.json && npm install && npm run dev",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

@@ -249,10 +249,12 @@ export default function TrainingSplitPage() {
         {translations.back}
       </Link>
 
-      <div className="space-y-1">
-        <h1 className="text-3xl font-bold">{translations.trainingSplit}</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Choose your preferred workout split</p>
-      </div>
+      {isHydrated && (
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold">{translations.trainingSplit}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Choose your preferred workout split</p>
+        </div>
+      )}
 
       {/* Only render after hydration to avoid SSR mismatch */}
       {isHydrated ? (

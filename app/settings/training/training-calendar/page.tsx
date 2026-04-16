@@ -214,10 +214,12 @@ export default function TrainingCalendarPage() {
         >
           <ChevronLeft size={24} />
         </Link>
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold">{translations.trainingCalendar}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Schedule and vacation mode</p>
-        </div>
+        {typeof window !== 'undefined' && (
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold">{translations.trainingCalendar}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Schedule and vacation mode</p>
+          </div>
+        )}
       </div>
 
       <div className="card-base space-y-6">
