@@ -34,12 +34,10 @@ export default function SettingsPage() {
           settings: 'Settings',
           preferences: 'Preferences',
           measurements: 'Measurements',
-          trainingCalendar: 'Training Calendar',
-          workoutSplit: 'Workout Split',
+          training: 'Training',
           preferencesDesc: 'Language and theme settings',
           measurementsDesc: 'Body weight and metrics',
-          trainingCalendarDesc: 'Schedule and vacation mode',
-          workoutSplitDesc: 'Choose your preferred workout split',
+          trainingDesc: 'Schedule, calendar, and workout splits',
         });
         return;
       }
