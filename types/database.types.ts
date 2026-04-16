@@ -1,3 +1,39 @@
+// --- Mock DB/Repository Pattern Types ---
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface UserPreferences {
+  id: string;
+  userId: string;
+  language: 'EN' | 'PT' | 'FR';
+  theme: 'light' | 'dark';
+  heightUnit: 'cm' | 'inch';
+  weightUnit: 'kg' | 'lbs';
+  pplOrder: 'push' | 'pull';
+}
+
+export interface UserTrainingSettings {
+  id: string;
+  userId: string;
+  scheduleType: '3-day' | '5-day' | '6-day' | 'custom';
+  trainingDays: string[];
+  vacationMode: boolean;
+}
+
+export interface MeasurementEntry {
+  id: string;
+  userId: string;
+  height: number;
+  heightUnit: 'cm' | 'inch';
+  weight: number;
+  weightUnit: 'kg' | 'lbs';
+  bodyType: 'ectomorph' | 'mesomorph' | 'endomorph';
+  dateTaken: string;
+}
 /**
  * Database Type Definitions
  * Auto-generated from Supabase schema or manually defined

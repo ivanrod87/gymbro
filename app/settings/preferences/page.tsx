@@ -5,6 +5,7 @@ import { Sun, Moon, Globe, ChevronLeft, Ruler } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
 import { SUPPORTED_LANGUAGES, getLanguageName } from '@/lib/translate';
+import { userRepository } from '@/lib/repositories';
 
 interface Translations {
   preferences: string;
@@ -30,6 +31,7 @@ export default function PreferencesPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inch'>('cm');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
   const [isHydrated, setIsHydrated] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const [translations, setTranslations] = useState<Translations>({
     preferences: 'Preferences',
@@ -51,16 +53,20 @@ export default function PreferencesPage() {
 
   useEffect(() => {
     setIsHydrated(true);
+    (async () => {
+      const user = await userRepository.getCurrentUser();
+      setUserId(user.id);
+      const prefs = await userRepository.getUserPreferences(user.id);
+      if (prefs) {
+        setHeightUnit(prefs.heightUnit);
+        setWeightUnit(prefs.weightUnit);
+        if (prefs.language && prefs.language !== language) setLanguage(prefs.language);
+        if (prefs.theme && prefs.theme !== theme) setTheme(prefs.theme);
+      }
+    })();
   }, []);
 
   useEffect(() => {
-    // Load preferences from localStorage
-    const savedHeightUnit = (localStorage.getItem('heightUnit') as 'cm' | 'inch' | null) || 'cm';
-    const savedWeightUnit = (localStorage.getItem('weightUnit') as 'kg' | 'lbs' | null) || 'kg';
-
-    setHeightUnit(savedHeightUnit);
-    setWeightUnit(savedWeightUnit);
-    
     const loadTranslations = async () => {
       if (language === 'EN') {
         setTranslations({
@@ -119,7 +125,6 @@ export default function PreferencesPage() {
         lbs: translated[14],
       });
     };
-
     loadTranslations();
   }, [language, translate]);
 
@@ -152,7 +157,10 @@ export default function PreferencesPage() {
             {SUPPORTED_LANGUAGES.map((lang) => (
               <button
                 key={lang}
-                onClick={() => setLanguage(lang)}
+                onClick={async () => {
+                  setLanguage(lang);
+                  if (userId) await userRepository.updateUserPreferences(userId, { language: lang });
+                }}
                 disabled={isTranslating}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center ${
                   language === lang
@@ -178,7 +186,10 @@ export default function PreferencesPage() {
           </h3>
           <div className="flex gap-2">
             <button
-              onClick={() => setTheme('light')}
+              onClick={async () => {
+                setTheme('light');
+                if (userId) await userRepository.updateUserPreferences(userId, { theme: 'light' });
+              }}
               className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                 theme === 'light'
                   ? 'bg-blue-600 text-white'
@@ -189,7 +200,10 @@ export default function PreferencesPage() {
               {translations.light}
             </button>
             <button
-              onClick={() => setTheme('dark')}
+              onClick={async () => {
+                setTheme('dark');
+                if (userId) await userRepository.updateUserPreferences(userId, { theme: 'dark' });
+              }}
               className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                 theme === 'dark'
                   ? 'bg-blue-600 text-white'
@@ -217,9 +231,9 @@ export default function PreferencesPage() {
               <p className="text-sm font-medium mb-2">{translations.height}</p>
               <div className="flex gap-2">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setHeightUnit('cm');
-                    localStorage.setItem('heightUnit', 'cm');
+                    if (userId) await userRepository.updateUserPreferences(userId, { heightUnit: 'cm' });
                   }}
                   className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                     heightUnit === 'cm'
@@ -230,9 +244,9 @@ export default function PreferencesPage() {
                   {translations.cm}
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setHeightUnit('inch');
-                    localStorage.setItem('heightUnit', 'inch');
+                    if (userId) await userRepository.updateUserPreferences(userId, { heightUnit: 'inch' });
                   }}
                   className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                     heightUnit === 'inch'
@@ -250,9 +264,9 @@ export default function PreferencesPage() {
               <p className="text-sm font-medium mb-2">{translations.weight}</p>
               <div className="flex gap-2">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setWeightUnit('kg');
-                    localStorage.setItem('weightUnit', 'kg');
+                    if (userId) await userRepository.updateUserPreferences(userId, { weightUnit: 'kg' });
                   }}
                   className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                     weightUnit === 'kg'
@@ -263,9 +277,9 @@ export default function PreferencesPage() {
                   {translations.kg}
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setWeightUnit('lbs');
-                    localStorage.setItem('weightUnit', 'lbs');
+                    if (userId) await userRepository.updateUserPreferences(userId, { weightUnit: 'lbs' });
                   }}
                   className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                     weightUnit === 'lbs'

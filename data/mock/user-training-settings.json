@@ -1,0 +1,9 @@
+[
+  {
+    "id": "train-1",
+    "userId": "user-1",
+    "scheduleType": "3-day",
+    "trainingDays": ["Mon", "Wed", "Fri"],
+    "vacationMode": false
+  }
+]
