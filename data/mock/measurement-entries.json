@@ -1,0 +1,12 @@
+[
+  {
+    "id": "meas-1",
+    "userId": "user-1",
+    "height": 171,
+    "heightUnit": "cm",
+    "weight": 98,
+    "weightUnit": "kg",
+    "bodyType": "endomorph",
+    "dateTaken": "2026-04-01T12:00:00.000Z"
+  }
+]
