@@ -1,9 +1,47 @@
 # WORK COMPLETED - GymBro Sprint 2 (Updated)
 
-## Current Session Summary (April 15, 2026)
-This session focused on code review and fixing TypeScript compilation errors. All issues were resolved, and the application is now running cleanly without any compilation errors or type warnings. The dev server is fully functional and ready for testing.
+## Current Session Summary (April 15-16, 2026)
+This session focused on code review, fixing TypeScript compilation errors, and restructuring the Training settings section. All issues were resolved, and the application is now running cleanly without any compilation errors or type warnings. The dev server is fully functional and ready for testing.
 
-## Latest Session Work - TypeScript & Type Declarations
+### Training Settings Restructuring - April 16, 2026
+**Objective:** Organize Training-related settings under a hierarchical hub structure instead of flat layout
+
+**Work Completed:**
+1. ✅ Created `/app/settings/training/page.tsx` - New Training hub parent page
+2. ✅ Moved training calendar to `/app/settings/training/training-calendar/page.tsx`
+3. ✅ Reorganized workout-split to `/app/settings/training/training-split/page.tsx`
+4. ✅ Updated main settings page navigation to link to `/settings/training` instead of individual pages
+5. ✅ Updated back button links in training pages to point to `/settings/training`
+6. ✅ Added consistent page titles and subtitles across all training pages
+7. ✅ Fixed hydration mismatches using `suppressHydrationWarning` and hydration-aware rendering
+8. ✅ Ensured titles persist on load (no disappearing text)
+
+**New Navigation Structure:**
+```
+/settings (main hub)
+  └─ /settings/training (Training hub) ← NEW
+      ├─ /settings/training/training-calendar
+      └─ /settings/training/training-split
+```
+
+**Files Created:**
+- `app/settings/training/page.tsx` - Training hub
+- `app/settings/training/training-calendar/page.tsx` - Calendar page (moved)
+- `app/settings/training/training-split/page.tsx` - Split page (moved)
+
+**Files Modified:**
+- `app/settings/page.tsx` - Updated to link to training hub
+- `app/settings/preferences/page.tsx` - Added hydration fix + subtitles
+- `app/settings/measurements/page.tsx` - Added hydration fix + subtitles
+
+**Hydration Fixes Applied:**
+- Training page: Used `suppressHydrationWarning` on header + selective content wrapping
+- Preferences page: Added `isHydrated` state + conditional rendering
+- Measurements page: Removed duplicate `isHydrated` declaration, properly wrapped content
+
+**Status:** ✅ COMPLETE - All build errors resolved, no hydration warnings
+
+### TypeScript Configuration Upgrade
 
 ### 1. TypeScript Configuration Upgrade
 **File:** `tsconfig.json`
@@ -353,25 +391,28 @@ useEffect(() => {
 - `app/settings/page.tsx` - Settings hub with card navigation
 - `app/settings/preferences/page.tsx` - User preferences configuration
 - `app/settings/measurements/page.tsx` - Body metrics tracking
-- `app/settings/training-calendar/page.tsx` - Training schedule & vacation mode
+- `app/settings/training/page.tsx` - Training hub parent page (NEW - Current Session)
+- `app/settings/training/training-calendar/page.tsx` - Training calendar moved to subdirectory (NEW - Current Session)
+- `app/settings/training/training-split/page.tsx` - Training split moved to subdirectory (NEW - Current Session)
 - `app/api/ai/analyze/route.ts` - Gemini API integration endpoint
 - `lib/ai-functions.tsx` - AI helper functions and data management
 - `lib/ai-prompts.tsx` - Prompt templates for Gemini API
 - `lib/useToast.ts` - Custom React hook for toast notifications
 - `components/ToastContainer.tsx` - Toast UI component
 - `components/ui/Sidebar.tsx` - Desktop sidebar navigation
-- `types/lucide-react.d.ts` - TypeScript type declarations for lucide-react (NEW - Current Session)
+- `types/lucide-react.d.ts` - TypeScript type declarations for lucide-react
 
 ## Files Modified (Sprint 2 & Enhancements)
 - `app/home/page.tsx` - Added vacation mode alert display + hydration fixes
 - `app/layout.tsx` - Updated for responsive layout with sidebar and navbar
 - `components/ui/Navbar.tsx` - Added md:hidden for mobile-only display
-- `components/ui/Sidebar.tsx` - Fixed icon rendering and TypeScript types (Current Session)
-- `app/settings/page.tsx` - Added max-width constraint, removed title
-- `app/settings/preferences/page.tsx` - Added max-width constraint, comments
-- `app/settings/measurements/page.tsx` - Added max-width constraint, comments, hydration fix, toast integration
-- `app/settings/training-calendar/page.tsx` - Added max-width constraint, comments, toast integration
-- `tsconfig.json` - Added ignoreDeprecations setting (Current Session)
+- `components/ui/Sidebar.tsx` - Fixed icon rendering and TypeScript types
+- `app/settings/page.tsx` - Changed to link to training hub + hydration improvements (Current Session)
+- `app/settings/preferences/page.tsx` - Added max-width constraint, comments, hydration fix (Current Session)
+- `app/settings/measurements/page.tsx` - Added max-width constraint, comments, hydration fix, removed duplicate state (Current Session)
+- `app/settings/training-calendar/page.tsx` → moved to `app/settings/training/training-calendar/page.tsx` (Current Session)
+- `app/settings/workout-split/page.tsx` → moved to `app/settings/training/training-split/page.tsx` (Current Session)
+- `tsconfig.json` - Added ignoreDeprecations setting
 
 ## Current Application Status
 - ✅ Sprint 1 complete (4-page app with navbar, translation, theme)
@@ -434,7 +475,9 @@ type Weekday = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
 
 ## Final Sign-Off
 All Sprint 2 work is complete and verified. The GymBro application now features:
-- A fully-functional Settings system with 3 specialized subpages
+- A fully-functional Settings system with hierarchical organization
+  - Main hub with 3 category cards (Preferences, Measurements, Training)
+  - Training hub with 2 sub-pages (Calendar, Split)
 - Complete localStorage persistence across all user data
 - Multi-language support (EN/PT/FR) on all pages
 - Google Gemini AI integration (available for future use)
@@ -442,18 +485,21 @@ All Sprint 2 work is complete and verified. The GymBro application now features:
 - Responsive layout with desktop sidebar and mobile bottom navigation
 - Optimized content presentation on all screen sizes
 - Full code documentation for maintainability
-- **NEW (Current Session):** Zero compilation errors - all TypeScript issues resolved
-- **NEW (Current Session):** Full TypeScript type support for lucide-react icons
-- **NEW (Current Session):** Production-ready type declarations and configurations
+- **CURRENT SESSION:** Training settings restructured into hierarchical hub layout
+- **CURRENT SESSION:** Consistent page titles and subtitles across all settings pages
+- **CURRENT SESSION:** Hydration mismatch issues resolved on all pages
+- **CURRENT SESSION:** Zero compilation errors - all TypeScript issues resolved
+- **CURRENT SESSION:** Full TypeScript type support for lucide-react icons
+- **CURRENT SESSION:** Production-ready type declarations and configurations
 - Zero compilation errors
 - Production-ready architecture
 - Dev server running successfully
 
 The codebase is well-structured, properly typed with TypeScript, responsive on all devices, and ready for continued development or database migration to Prisma.
 
-**Last Updated:** April 15, 2026
+**Last Updated:** April 16, 2026 (Training Hub Restructuring & Hydration Fixes)
 **Status:** ✅ COMPLETE & VERIFIED
-**Sprint:** Sprint 2 - Settings Hub & Body Metrics
+**Sprint:** Sprint 2 - Settings Hub & Body Metrics (Enhanced)
 **Build Status:** ✅ CLEAN COMPILE - ZERO ERRORS
 **TypeScript Status:** ✅ FULLY TYPED - All modules properly declared
 **Dev Server:** ✅ RUNNING - http://localhost:3000
