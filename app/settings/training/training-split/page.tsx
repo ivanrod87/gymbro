@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTranslation } from '@/lib/TranslationContext';
 import { useToast } from '@/lib/useToast';
 import { ToastContainer } from '@/components/ToastContainer';
+import { userRepository } from '@/lib/repositories';
 
 type SplitType = 'PPL' | 'Upper / Lower' | 'Arnold Split' | 'Hybrid Split';
 
@@ -32,24 +33,16 @@ interface Translations {
   hybridDescription: string;
 }
 
-const SPLITS = [
-  {
-    name: 'PPL',
-    description: 'Push Pull Legs separates training by movement pattern. Push focuses on pressing muscles like chest, shoulders, and triceps, pull targets back, biceps, and rear delts, and legs covers the lower body.',
-  },
-  {
-    name: 'Upper / Lower',
-    description: 'Upper / Lower divides training into upper-body sessions and lower-body sessions. Upper days combine muscles like chest, back, shoulders, and arms, while lower days focus on quads, hamstrings, glutes, and calves.',
-  },
-  {
-    name: 'Arnold Split',
-    description: 'The Arnold Split groups muscles by paired body parts, typically chest with back, shoulders with arms, and legs on their own. It is designed to create high training volume and strong muscle focus within each session.',
-  },
-  {
-    name: 'Hybrid Split',
-    description: 'A Hybrid Split combines elements from different training styles. For example, it may mix upper/lower sessions with push, pull, or leg-focused workouts depending on the goal.',
-  },
-];
+
+type SplitMeta = { name: string; description: string };
+
+// SPLITS will be loaded from the repository (mock DB)
+const [splits, setSplits] = [[], () => {}]; // placeholder, will be set in useEffect
+  const [splits, setSplits] = useState<SplitMeta[]>([]);
+  useEffect(() => {
+    // Load splits from repository (mock DB)
+    userRepository.getSplits().then(setSplits);
+  }, []);
 
 export default function TrainingSplitPage() {
   const { language, translate } = useTranslation();
@@ -65,24 +58,6 @@ export default function TrainingSplitPage() {
     if (typeof window !== 'undefined') {
       const savedSplit = localStorage.getItem('workoutSplit') as SplitType;
       if (savedSplit) {
-        return localStorage.getItem(`workoutSplitPosition_${savedSplit}`) || '';
-      }
-    }
-    return '';
-  });
-
-  const [saved, setSaved] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  const [translations, setTranslations] = useState<Translations>({
-    trainingSplit: 'Training Split',
-    back: 'Back',
-    selectSplit: 'Select Your Training Split',
-    startingPosition: 'Starting Position',
-    pushFirst: 'Push First',
-    pullFirst: 'Pull First',
-    upperFirst: 'Upper First',
-    lowerFirst: 'Lower First',
     pplFirst: 'PPL First',
     upperLowerFirst: 'Upper/Lower First',
     save: 'Save Settings',
