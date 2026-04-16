@@ -29,6 +29,7 @@ export default function PreferencesPage() {
     useTranslation();
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inch'>('cm');
   const [weightUnit, setWeightUnit] = useState<'kg' | 'lbs'>('kg');
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const [translations, setTranslations] = useState<Translations>({
     preferences: 'Preferences',
@@ -47,6 +48,10 @@ export default function PreferencesPage() {
     kg: 'Kilograms',
     lbs: 'Pounds',
   });
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     // Load preferences from localStorage
@@ -120,18 +125,23 @@ export default function PreferencesPage() {
 
   return (
     <div className="max-w-[800px] mx-auto space-y-6 pb-20">
-      {/* Header with back button */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/settings"
-          className="p-2 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </Link>
-        <h1 className="text-3xl font-bold">{translations.preferences}</h1>
-      </div>
+      {isHydrated && (
+        <>
+          {/* Header with back button */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/settings"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors"
+            >
+              <ChevronLeft size={24} />
+            </Link>
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold">{translations.preferences}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Language and theme settings</p>
+            </div>
+          </div>
 
-      <div className="card-base space-y-6">
+          <div className="card-base space-y-6">
         {/* Language Setting */}
         <div className="pb-6 border-b border-gray-200 dark:border-dark-700">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
@@ -270,8 +280,9 @@ export default function PreferencesPage() {
           </div>
         </div>
 
-
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

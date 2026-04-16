@@ -29,13 +29,31 @@ Successfully refactored the Settings page from a single flat page into an organi
   - Description text explaining the setting
   - Ready for future metrics (height, age, etc.)
 
-#### 3. Training Calendar (`/app/settings/training-calendar/page.tsx`)
+#### 3. Training Hub (`/app/settings/training/page.tsx`) - NEW RESTRUCTURED
+- **Content**: Parent hub for training-related settings
+- **Features**:
+  - Back navigation button to settings hub
+  - Two navigation cards for training sub-sections
+  - Title and subtitle with description
+  - Hydration-aware rendering with `suppressHydrationWarning`
+
+#### 3a. Training Calendar (`/app/settings/training/training-calendar/page.tsx`)
 - **Content**: Schedule definition + Gym vacation mode
 - **Features**:
-  - Back navigation button
-  - Schedule options (Standard PPL / Custom 6-Day Split)
+  - Back navigation button to training hub (/settings/training)
+  - Schedule options (3-day/5-day/6-day/custom)
   - Gym vacation mode toggle button
   - Description text for each setting
+  - Title and subtitle for consistency
+
+#### 3b. Training Split (`/app/settings/training/training-split/page.tsx`)
+- **Content**: Workout split selection (renamed from workout-split)
+- **Features**:
+  - Back navigation button to training hub (/settings/training)
+  - Multiple split types with accordions
+  - Starting position selector (dependent on split type)
+  - Description text and full i18n support
+  - Title and subtitle for consistency
 
 ## Navigation Flow
 ```
@@ -46,8 +64,11 @@ Successfully refactored the Settings page from a single flat page into an organi
   ├─ /settings/measurements (Body weight)
   │   └─ Back button → /settings
   │
-  └─ /settings/training-calendar (Schedule + Vacation)
-      └─ Back button → /settings
+  └─ /settings/training (Training Hub)
+      ├─ /settings/training/training-calendar (Schedule + Vacation)
+      │   └─ Back button → /settings/training
+      └─ /settings/training/training-split (Workout split)
+          └─ Back button → /settings/training
 ```
 
 ## UI Components
@@ -91,10 +112,27 @@ app/settings/
 ├── preferences/
 │   └── page.tsx            (Language + Theme)
 ├── measurements/
-│   └── page.tsx            (Body weight)
-└── training-calendar/
-    └── page.tsx            (Schedule + Vacation mode)
+│   └── page.tsx            (Body metrics)
+└── training/
+    ├── page.tsx            (Training Hub)
+    ├── training-calendar/
+    │   └── page.tsx        (Schedule + Vacation mode)
+    └── training-split/
+        └── page.tsx        (Workout split selection)
 ```
 
-## Status: ✅ COMPLETE
-All refactoring complete. Settings area now organized into grouped subpages with clean navigation structure.
+## Status: ✅ COMPLETE & ENHANCED
+
+### Latest Update (April 16, 2026)
+**Training Settings Restructuring** - Successfully organized Training settings under a new Hub parent page:
+- ✅ Created `/app/settings/training/page.tsx` as parent hub
+- ✅ Moved training calendar to `/app/settings/training/training-calendar/page.tsx`
+- ✅ Reorganized workout-split to `/app/settings/training/training-split/page.tsx`
+- ✅ Updated all back button links to point to `/settings/training`
+- ✅ Added consistent titles and subtitles across all pages
+- ✅ Fixed hydration mismatches with `suppressHydrationWarning` and hydration-aware rendering
+- ✅ Maintained all existing functionality and localStorage persistence
+- ✅ Full dark mode support maintained
+- ✅ All i18n support preserved
+
+All refactoring complete. Settings area now organized into grouped subpages with clean hierarchical navigation structure.

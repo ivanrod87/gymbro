@@ -44,6 +44,7 @@ interface Translations {
 export default function MeasurementsPage() {
   const { language, theme, translate } = useTranslation();
   const { toasts, showToast, removeToast } = useToast();
+  const [isHydrated, setIsHydrated] = useState(false);
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inch'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('heightUnit') as 'cm' | 'inch') || 'cm';
@@ -78,7 +79,6 @@ export default function MeasurementsPage() {
 
   const [saving, setSaving] = useState(false);
   const [history, setHistory] = useState<MeasurementEntry[]>([]);
-  const [isHydrated, setIsHydrated] = useState(false);
 
   const [translations, setTranslations] = useState<Translations>({
     measurements: 'Measurements',
@@ -251,29 +251,34 @@ export default function MeasurementsPage() {
 
   return (
     <div className="max-w-[800px] mx-auto space-y-6 pb-20">
-      {/* Header with back button */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/settings"
-          className="p-2 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors"
-        >
-          <ChevronLeft size={24} />
-        </Link>
-        <h1 className="text-3xl font-bold">{translations.measurements}</h1>
-      </div>
+      {isHydrated && (
+        <>
+          {/* Header with back button */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/settings"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors"
+            >
+              <ChevronLeft size={24} />
+            </Link>
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold">{translations.measurements}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Body weight and metrics</p>
+            </div>
+          </div>
 
-      <div className="card-base space-y-6">
-        {/* Height Input */}
-        <div>
-          <label className="block text-sm font-semibold mb-2">{translations.height}</label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={height}
-              onChange={(e) => {
-                setHeight(e.target.value);
-                localStorage.setItem('lastHeight', e.target.value);
-              }}
+          <div className="card-base space-y-6">
+            {/* Height Input */}
+            <div>
+              <label className="block text-sm font-semibold mb-2">{translations.height}</label>
+              <div className="flex gap-2">
+                <input
+                  type="number"
+                  value={height}
+                  onChange={(e) => {
+                    setHeight(e.target.value);
+                    localStorage.setItem('lastHeight', e.target.value);
+                  }}
               placeholder={translations.enterHeight}
               className="flex-1 px-4 py-2 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg text-gray-900 dark:text-gray-50 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-600"
             />
@@ -447,8 +452,10 @@ export default function MeasurementsPage() {
               </table>
             </div>
           )}
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Toast notifications */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
