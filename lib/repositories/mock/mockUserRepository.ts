@@ -1,10 +1,13 @@
 import { UserRepository } from '../userRepository';
 import { User, UserPreferences, UserTrainingSettings, MeasurementEntry } from '../../../types/database.types';
 
+
 import usersSeed from '@/data/mock/users.json';
 import prefsSeed from '@/data/mock/user-preferences.json';
 import trainSeed from '@/data/mock/user-training-settings.json';
 import measSeed from '@/data/mock/measurement-entries.json';
+import splitsSeed from '@/data/mock/splits.json';
+import schedulePresetsSeed from '@/data/mock/schedule-presets.json';
 
 const USERS_KEY = 'mockdb_users';
 const PREFS_KEY = 'mockdb_user_preferences';
@@ -25,7 +28,16 @@ function saveJson<T>(key: string, data: T) {
   }
 }
 
-export const mockUserRepository: UserRepository = {
+export const mockUserRepository: UserRepository & {
+  getSplits: () => Promise<{ name: string; description: string }[]>;
+  getSchedulePresets: () => Promise<Record<string, string[] | null>>;
+} = {
+    async getSplits() {
+      return splitsSeed;
+    },
+    async getSchedulePresets() {
+      return schedulePresetsSeed;
+    },
   async getCurrentUser() {
     const users: User[] = loadJson(USERS_KEY, usersSeed);
     return users[0];

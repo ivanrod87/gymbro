@@ -1,0 +1,6 @@
+{
+  "3-day": ["Mon", "Wed", "Fri"],
+  "5-day": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+  "6-day": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "custom": null
+}

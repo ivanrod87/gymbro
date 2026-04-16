@@ -10,4 +10,8 @@ export interface UserRepository {
   getMeasurementHistory(userId: string): Promise<MeasurementEntry[]>;
   saveMeasurementEntry(userId: string, entry: MeasurementEntry): Promise<void>;
   deleteMeasurementEntry(userId: string, entryId: string): Promise<void>;
+
+  // Mock DB metadata
+  getSplits(): Promise<{ name: string; description: string }[]>;
+  getSchedulePresets(): Promise<Record<string, string[] | null>>;
 }
