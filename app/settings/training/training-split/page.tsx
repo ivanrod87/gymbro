@@ -33,20 +33,15 @@ interface Translations {
   hybridDescription: string;
 }
 
-
 type SplitMeta = { name: string; description: string };
-
-// SPLITS will be loaded from the repository (mock DB)
-const [splits, setSplits] = [[], () => {}]; // placeholder, will be set in useEffect
-  const [splits, setSplits] = useState<SplitMeta[]>([]);
-  useEffect(() => {
-    // Load splits from repository (mock DB)
-    userRepository.getSplits().then(setSplits);
-  }, []);
 
 export default function TrainingSplitPage() {
   const { language, translate } = useTranslation();
   const { toasts, showToast, removeToast } = useToast();
+
+  // Load splits from repository (mock DB)
+  const [splits, setSplits] = useState<SplitMeta[]>([]);
+  
   const [selectedSplit, setSelectedSplit] = useState<SplitType | null>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('workoutSplit') as SplitType) || null;
@@ -58,6 +53,24 @@ export default function TrainingSplitPage() {
     if (typeof window !== 'undefined') {
       const savedSplit = localStorage.getItem('workoutSplit') as SplitType;
       if (savedSplit) {
+        return localStorage.getItem(`workoutSplitPosition_${savedSplit}`) || '';
+      }
+    }
+    return '';
+  });
+
+  const [saved, setSaved] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  const [translations, setTranslations] = useState<Translations>({
+    trainingSplit: 'Training Split',
+    back: 'Back',
+    selectSplit: 'Select Your Training Split',
+    startingPosition: 'Starting Position',
+    pushFirst: 'Push First',
+    pullFirst: 'Pull First',
+    upperFirst: 'Upper First',
+    lowerFirst: 'Lower First',
     pplFirst: 'PPL First',
     upperLowerFirst: 'Upper/Lower First',
     save: 'Save Settings',
@@ -74,6 +87,11 @@ export default function TrainingSplitPage() {
 
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    // Load splits from repository (mock DB)
+    userRepository.getSplits().then(setSplits);
   }, []);
 
   useEffect(() => {
@@ -237,7 +255,7 @@ export default function TrainingSplitPage() {
           {/* Split Selection with Accordion */}
           <div className="space-y-3">
             <h2 className="font-semibold text-lg">{translations.selectSplit}</h2>
-            {SPLITS.map((split) => {
+            {splits.map((split) => {
               const isSelected = selectedSplit === split.name;
               const positionOptions = getPositionOptionsForSplit(split.name as SplitType);
 
